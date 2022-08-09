@@ -1,0 +1,307 @@
+PUT demand
+{
+  "settings": {
+    "index": {
+      "number_of_shards": "3",
+      "max_result_window": "1000000",
+      "analysis": {
+        "tokenizer": {
+          "ngram_tokenizer": {
+            "type": "ngram",
+            "min_gram": 2,
+            "max_gram": 30,
+            "token_chars": [
+              "letter",
+              "digit"
+            ]
+          }
+        },
+        "filter": {
+          "ngram_filter_f" : {
+            "type" : "edge_ngram",
+            "min_gram" : 4,
+            "max_gram" : 30
+          },
+          "ngram_filter_b" : {
+            "type" : "edge_ngram",
+            "min_gram" : 4,
+            "max_gram" : 30,
+            "side": "back"
+          }
+        },
+        "analyzer": {
+          "default": {
+            "filter": [
+              "uppercase"
+            ],
+            "tokenizer": "ik_smart"
+          },
+          "ngram": {
+            "filter": [
+              "uppercase"
+            ],
+            "tokenizer": "ngram_tokenizer"
+          },
+          "ngram_f" : {
+            "type" : "custom",
+            "tokenizer" : "standard",
+            "filter" : [
+              "uppercase",
+              "ngram_filter_f"
+            ]
+          },
+          "ngram_b" : {
+            "type" : "custom",
+            "tokenizer" : "standard",
+            "filter" : [
+              "uppercase",
+              "ngram_filter_b"
+            ]
+          }
+        }
+      },
+      "number_of_replicas": "1"
+    }
+  },
+  "mappings": {
+    "needs": {
+      "properties": {
+        "shoppingListId": {
+          "type": "text",
+          "analyzer": "ngram_f",
+          "fields": {
+            "back": {
+              "type": "text",
+              "analyzer": "ngram_b"
+            }
+          }
+        },
+        "statusId": {
+          "type": "keyword"
+        },
+        "inquiryType": {
+          "type": "keyword"
+        },
+        "createdBy": {
+          "type": "keyword"
+        },
+        "carBrandId": {
+          "type": "keyword"
+        },
+        "garageCompanyId": {
+          "type": "keyword"
+        },
+        "sourceId": {
+          "type": "keyword"
+        },
+        "provinceGeoId": {
+          "type": "keyword"
+        },
+        "cityGeoId": {
+          "type": "keyword"
+        },
+        "countyGeoId": {
+          "type": "keyword"
+        },
+        "villageGeoId": {
+          "type": "keyword"
+        },
+        "createdStamp": {
+          "type": "date"
+        },
+        "vin": {
+          "type": "text",
+          "analyzer": "ngram_f",
+          "fields": {
+            "back": {
+              "type": "text",
+              "analyzer": "ngram_b"
+            }
+          }
+        },
+        "orderIds": {
+          "type": "text",
+          "analyzer": "ngram_f",
+          "fields": {
+            "back": {
+              "type": "text",
+              "analyzer": "ngram_b"
+            }
+          }
+        },
+        "dataSource": {
+          "type": "keyword"
+        },
+        "needsNamesEn": {
+          "type": "text",
+          "analyzer": "ngram_f",
+          "fields": {
+            "back": {
+              "type": "text",
+              "analyzer": "ngram_b"
+            }
+          }
+        },
+        "needsNamesZh": {
+          "type": "text",
+          "analyzer": "ngram"
+        }
+      }
+    }
+  }
+}
+
+
+
+
+# 旧报价单索引加属性
+PUT quote/_mapping/quotesupplierheader
+{
+ "properties": {
+   "inquiryType":{
+     "type":"keyword"
+   },
+    "isSimpleInquiry":{
+     "type":"boolean"
+   },
+   "provinceId":{
+     "type":"keyword"
+   },
+    "cityId":{
+     "type":"keyword"
+   },
+   "carBrandId":{
+     "type":"keyword"
+   }
+ }
+}
+
+
+# 中端车报价单新建索引
+PUT quotation
+{
+    "settings":{
+        "index":{
+            "number_of_shards":"3",
+            "max_result_window":"1000000",
+            "analysis":{
+                "tokenizer":{
+                    "ngram_tokenizer":{
+                        "type":"ngram",
+                        "min_gram":2,
+                        "max_gram":30,
+                        "token_chars":[
+                            "letter",
+                            "digit"
+                        ]
+                    }
+                },
+                "filter":{
+                    "ngram_filter_f":{
+                        "type":"edge_ngram",
+                        "min_gram":4,
+                        "max_gram":30
+                    },
+                    "ngram_filter_b":{
+                        "type":"edge_ngram",
+                        "min_gram":4,
+                        "max_gram":30,
+                        "side":"back"
+                    }
+                },
+                "analyzer":{
+                    "default":{
+                        "filter":[
+                            "uppercase"
+                        ],
+                        "tokenizer":"ik_smart"
+                    },
+                    "ngram":{
+                        "filter":[
+                            "uppercase"
+                        ],
+                        "tokenizer":"ngram_tokenizer"
+                    },
+                    "ngram_f":{
+                        "type":"custom",
+                        "tokenizer":"standard",
+                        "filter":[
+                            "uppercase",
+                            "ngram_filter_f"
+                        ]
+                    },
+                    "ngram_b":{
+                        "type":"custom",
+                        "tokenizer":"standard",
+                        "filter":[
+                            "uppercase",
+                            "ngram_filter_b"
+                        ]
+                    }
+                }
+            },
+            "number_of_replicas":"1"
+        }
+    },
+    "mappings":{
+        "quotesupplierheader":{
+            "properties":{
+                "allOrdered":{
+                    "type":"keyword"
+                },
+                "carBrandId":{
+                    "type":"keyword"
+                },
+                "cityId":{
+                    "type":"keyword"
+                },
+                "createdStamp":{
+                    "type":"date"
+                },
+                "dataSource":{
+                    "type":"keyword"
+                },
+                "garageCompanyId":{
+                    "type":"keyword"
+                },
+                "id":{
+                    "type":"long"
+                },
+                "inquiryId":{
+                    "type":"text",
+                    "analyzer":"ngram_b"
+                },
+                "inquiryType":{
+                    "type":"keyword"
+                },
+                "internalCode":{
+                    "type":"keyword"
+                },
+                "isAnonymous":{
+                    "type":"byte"
+                },
+                "isSimpleInquiry":{
+                    "type":"boolean"
+                },
+                "provinceId":{
+                    "type":"keyword"
+                },
+                "quoteType":{
+                    "type":"keyword"
+                },
+                "quoteUser":{
+                    "type":"keyword"
+                },
+                "sourceId":{
+                    "type":"keyword"
+                },
+                "statusId":{
+                    "type":"keyword"
+                },
+                "storeId":{
+                    "type":"keyword"
+                }
+            }
+        }
+    }
+}
