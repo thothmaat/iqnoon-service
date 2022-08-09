@@ -7,14 +7,17 @@ import com.thoth.iqnoon.common.PageResult;
 import com.thoth.iqnoon.common.ReqBody;
 import com.thoth.iqnoon.common.RespBody;
 import com.thoth.iqnoon.entities.UserEntity;
+import com.thoth.iqnoon.enums.DeleteFlagEnum;
 import com.thoth.iqnoon.request.CreateUserParam;
 import com.thoth.iqnoon.request.QueryUserParam;
 import com.thoth.iqnoon.response.UserDto;
 import com.thoth.iqnoon.service.UserService;
+import com.thoth.iqnoon.utils.IdentityCardNumberUtils;
 import com.thoth.iqnoon.utils.SnowflakeWorker;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +38,10 @@ public class UserController {
     @RequestMapping(value = "/queryByUserId",method = RequestMethod.POST)
     public RespBody<UserDto> queryByUserId(@RequestBody ReqBody<String> reqBody){
 
+        if(ObjectUtils.isEmpty(reqBody) || StringUtils.isBlank(reqBody.getParam())){
+            return new RespBody<>();
+        }
+
         String param = reqBody.getParam();
         UserEntity userEntity = userService.getById(param);
         UserDto userDto = UserDto.builder()
@@ -44,7 +51,7 @@ public class UserController {
                 .createTime(userEntity.getCreateTime())
                 .email(userEntity.getEmail())
                 .gender(userEntity.getGender())
-                .identityCardNumber(userEntity.getIdentityCardNumber())
+                .idCardNumber(userEntity.getIdCardNumber())
                 .telephone(userEntity.getTelephone())
                 .updateBy(userEntity.getUpdateBy())
                 .userName(userEntity.getUserName())
@@ -59,16 +66,22 @@ public class UserController {
     public RespBody<Boolean> createUser(@RequestBody @Valid ReqBody<CreateUserParam> reqBody){
         CreateUserParam user = reqBody.getParam();
         UserEntity userEntity = UserEntity.builder()
+                .userId(SnowflakeWorker.generateId().toString())
                 .age(user.getAge())
                 .createBy(user.getCreateBy())
                 .createTime(LocalDateTime.now())
                 .email(user.getEmail())
                 .gender(user.getGender())
-                .identityCardNumber(user.getIdentityCardNumber())
+                .idCardNumber(user.getIdCardNumber())
                 .telephone(user.getTelephone())
-                .userId(SnowflakeWorker.generateId().toString())
                 .userName(user.getUserName())
+                .password(user.getPassword())
                 .userStatus(user.getUserStatus())
+                .deleteFlag(DeleteFlagEnum.NOT_DELETE.code)
+                .birthday(IdentityCardNumberUtils.getBirthDayFromIdCard(user.getIdCardNumber()))
+                .weChat(user.getWeChat())
+                .updateBy(user.getCreateBy())
+                .updateTime(LocalDateTime.now())
                 .build();
 
         boolean success = userService.save(userEntity);
@@ -84,15 +97,14 @@ public class UserController {
 
         QueryUserParam param = pageQuery.getParam();
 
-        String userName = param.getUserName();
-
         Page<UserEntity> page = new Page<>(pageQuery.getPageNum(),pageQuery.getPageSize());
         LambdaQueryWrapper<UserEntity> lambdaQueryWrapper = new LambdaQueryWrapper<UserEntity>()
                 .eq(ObjectUtils.isNotEmpty(param.getUserStatus()), UserEntity::getUserStatus, param.getUserStatus())
                 .like(ObjectUtils.isNotEmpty(param.getUserName()),UserEntity::getUserName,param.getUserName())
                 .eq(ObjectUtils.isNotEmpty(param.getGender()),UserEntity::getGender,param.getGender())
-                .eq(ObjectUtils.isNotEmpty(param.getIdentityCardNumber()),UserEntity::getIdentityCardNumber,param.getIdentityCardNumber())
-                .eq(ObjectUtils.isNotEmpty(param.getTelephone()),UserEntity::getTelephone,param.getTelephone());
+                .eq(ObjectUtils.isNotEmpty(param.getIdCardNumber()),UserEntity::getIdCardNumber,param.getIdCardNumber())
+                .eq(ObjectUtils.isNotEmpty(param.getTelephone()),UserEntity::getTelephone,param.getTelephone())
+                .eq(UserEntity::getDeleteFlag,DeleteFlagEnum.NOT_DELETE.code);
 
         Page<UserEntity> pageEntities = userService.page(page, lambdaQueryWrapper);
 
@@ -115,13 +127,18 @@ public class UserController {
                 .updateTime(entity.getUpdateTime())
                 .updateBy(entity.getUpdateBy())
                 .userName(entity.getUserName())
+                .password(entity.getPassword())
                 .telephone(entity.getTelephone())
-                .identityCardNumber(entity.getIdentityCardNumber())
+                .idCardNumber(entity.getIdCardNumber())
                 .gender(entity.getGender())
                 .email(entity.getEmail())
                 .createTime(entity.getCreateTime())
                 .createBy(entity.getCreateBy())
-                .age(entity.getAge()).build();
+                .age(entity.getAge())
+                .birthday(entity.getBirthday())
+                .weChat(entity.getWeChat())
+                .deleteFlag(entity.getDeleteFlag())
+                .build();
     }
 
 }

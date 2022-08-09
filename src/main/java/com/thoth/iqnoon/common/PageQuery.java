@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 /**
  * 分页入参数据封装类
  */
-@ApiModel("分页入参数据")
+@ApiModel("分页查询参数")
 public class PageQuery<T> {
     @ApiModelProperty(value = "当前页码",required = true)
     private Integer pageNum=1;
@@ -30,15 +30,14 @@ public class PageQuery<T> {
     }
 
     public Integer getPageSize() {
+        if(pageSize < 1){
+            return 10;
+        }
         return pageSize;
     }
 
     public void setPageSize(Integer pageSize) {
-        if(pageSize < 1){
-            this.pageSize = 10;
-        }else{
-            this.pageSize = pageSize;
-        }
+        this.pageSize = pageSize;
     }
 
     public T getParam() {

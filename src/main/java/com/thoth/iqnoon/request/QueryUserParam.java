@@ -15,7 +15,7 @@ public class QueryUserParam {
     private String telephone;
 
     @ApiModelProperty("生份证号码")
-    private String identityCardNumber;
+    private String idCardNumber;
 
     @ApiModelProperty("性别：1-男，0-女")
     private String gender;

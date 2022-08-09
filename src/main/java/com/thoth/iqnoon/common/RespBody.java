@@ -17,7 +17,7 @@ public class RespBody<T> {
     @ApiModelProperty ("返回记录")
     private T data;
 
-    protected RespBody() {
+    public RespBody() {
     }
 
     public RespBody(long code, String message, T data) {

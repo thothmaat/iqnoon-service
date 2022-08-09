@@ -8,10 +8,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @SpringBootApplication
 @EnableDiscoveryClient
 @MapperScan(basePackages = "com.thoth.iqnoon.mapper")
-public class IQNoonApplication {
+public class IQNoonServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(IQNoonApplication.class, args);
+		SpringApplication.run(IQNoonServiceApplication.class, args);
 	}
 
 }
