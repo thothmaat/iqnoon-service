@@ -26,7 +26,7 @@ public class Knife4jConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("IQnoonService后台服务API接口文档")
+                .title("iQnoonService后台服务API接口文档")
                 .description("knife4j-API接口文档")
                 .termsOfServiceUrl("http://localhost:8088/doc.html")
                 .contact(new Contact("thoth","url","iqnoon@thoth.com"))
