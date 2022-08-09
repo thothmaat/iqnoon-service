@@ -14,7 +14,12 @@ spring:
   mvc:
     path-match:
       matching-strategy: ant_path_matcher
-
+  elasticsearch:
+    username: iqnoon
+    password: iqnoon
+    uris:
+      - 127.0.0.1:9200
+      - localhost:9300
 # mybatis-plus
 mybatis-plus:
   type-aliases-package: com/thoth/iqnoon/entities
