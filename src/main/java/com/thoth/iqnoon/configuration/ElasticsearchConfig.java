@@ -41,9 +41,6 @@ public class ElasticsearchConfig {
         String[] uriArray = uris.toArray(new String[size]);
         HttpHost[] httpHosts = new HttpHost[size];
         for (int i = 0; i < size; i++) {
-            String[] hostNamePort = uriArray[i].split(":");
-            HttpHost http = new HttpHost(hostNamePort[0], Integer.parseInt(hostNamePort[1]), "http");
-            httpHosts[i] = http;
             httpHosts[i] = HttpHost.create(uriArray[i]);
         }
         RestClientBuilder clientBuilder = RestClient.builder(httpHosts);
